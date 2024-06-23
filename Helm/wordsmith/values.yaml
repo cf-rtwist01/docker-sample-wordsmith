@@ -1,0 +1,18 @@
+db:
+  image: postgres
+  tag: 10.0-alpine
+  port: 5432
+  targetPort: 5432
+
+web:
+  image: shivin8080/demo-web
+  tag: main
+  port: 8080
+  targetPort: 80
+
+api:
+  image: shivin8080/demo-api
+  tag: main
+  port: 8080
+  targetPort: 8080
+  replicas: 5

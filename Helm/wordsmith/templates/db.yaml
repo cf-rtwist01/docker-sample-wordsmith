@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: db
+    {{- include "wordsmith.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.db.port }}
+      targetPort: {{ .Values.db.targetPort }}
+      name: db
+  selector:
+    app: db
+    {{- include "wordsmith.selectorLabels" . | nindent 4 }}
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "wordsmith.fullname" . }}-db"
+  labels:
+    app: db
+    {{- include "wordsmith.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: db
+      {{- include "wordsmith.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: db
+        {{- include "wordsmith.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: db
+          image: "{{ .Values.db.image }}:{{ .Values.db.tag }}"
+          ports:
+            - containerPort: {{ .Values.db.port }}
+              name: db
+          volumeMounts:
+            - name: db-schema
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-schema
+          configMap:
+            name: db-schema
+---
+apiVersion: v1
+data:
+  words.sql: |
+    CREATE TABLE nouns (word TEXT NOT NULL);
+    CREATE TABLE verbs (word TEXT NOT NULL);
+    CREATE TABLE adjectives (word TEXT NOT NULL);
+
+    INSERT INTO nouns(word) VALUES
+      ('cloud'),
+      ('elephant'),
+      ('gø language'),
+      ('laptøp'),
+      ('cøntainer'),
+      ('micrø-service'),
+      ('turtle'),
+      ('whale'),
+      ('gøpher'),
+      ('møby døck'),
+      ('server'),
+      ('bicycle'),
+      ('viking'),
+      ('mermaid'),
+      ('fjørd'),
+      ('legø'),
+      ('flødebolle'),
+      ('smørrebrød');
+
+    INSERT INTO verbs(word) VALUES
+      ('will drink'),
+      ('smashes'),
+      ('smøkes'),
+      ('eats'),
+      ('walks tøwards'),
+      ('løves'),
+      ('helps'),
+      ('pushes'),
+      ('debugs'),
+      ('invites'),
+      ('hides'),
+      ('will ship');
+
+    INSERT INTO adjectives(word) VALUES
+      ('the exquisite'),
+      ('a pink'),
+      ('the røtten'),
+      ('a red'),
+      ('the serverless'),
+      ('a brøken'),
+      ('a shiny'),
+      ('the pretty'),
+      ('the impressive'),
+      ('an awesøme'),
+      ('the famøus'),
+      ('a gigantic'),
+      ('the gløriøus'),
+      ('the nørdic'),
+      ('the welcøming'),
+      ('the deliciøus');
+kind: ConfigMap
+metadata:
+  name: db-schema
