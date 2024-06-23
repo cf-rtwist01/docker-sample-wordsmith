@@ -1,4 +1,4 @@
-# Wordsmith App
+# Wordsmith-App
 
 Wordsmith is the demo project originally shown at DockerCon EU 2017 and 2018.
 
