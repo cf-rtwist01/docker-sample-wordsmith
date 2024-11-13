@@ -11,7 +11,7 @@ services:
     build: api
     image: dockersamples/wordsmith-api
     deploy:
-      replicas: 5
+      replicas: 1
 
   web:
     build: web
